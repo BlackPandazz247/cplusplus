@@ -3,3 +3,5 @@ tempCodeRunnerFile.cpp
 .vscode
 .vs
 Programmi_c_cpp.code-workspace
+.gitattributes
+*.txt
