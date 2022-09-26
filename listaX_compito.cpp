@@ -90,97 +90,132 @@ void stampa(lista* riferimento)  //stampa i valori della lista
     }
 }
 
-lista* deleteTop(lista* riferimento)  //wlimina il primo nodo
+lista* deleteTop(lista* riferimento)  //elimina il primo nodo
 {
-    lista* sonda = riferimento;
-    riferimento = sonda->next;
-    delete sonda;
+    if(riferimento == NULL)  //controllo se la lista è vuota
+        cout<< "La lista e' vuota\n\n";
+    else
+    {
+       lista* sonda = riferimento;
+        riferimento = sonda->next;  //sposto il riferimento al secondo nodo dato che il primo sarà eliminato
+        delete sonda;   //elimino il primo nodo 
 
-    return riferimento;
+        return riferimento; 
+    }
+    
 }
 
 lista* deleteCoda(lista* riferimento)   //elimina l'ultimo nodo
 {
-    lista* sonda = riferimento;
-    lista* sondaPrev = NULL;
-
-    while(sonda->next != NULL)
+    if(riferimento == NULL)  //controllo se la lista è vuota
+        cout<< "La lista e' vuota\n\n";
+    else
     {
-        sondaPrev = sonda;
-        sonda = sonda->next;
-    }
-    sondaPrev->next = NULL;
-    delete sonda;
+        lista* sonda = riferimento;
+        lista* sondaPrev = NULL;
 
-    return riferimento;
+        if(sonda->next == NULL)       //controllo se la lista ha solo un nodo
+            return deleteTop(riferimento); //se la lista ha solo il primo elemento chiamo la funzione per eliminare in testa
+
+        while(sonda->next != NULL)  //faccio arrivare la sonda fino all'ulitmo nodo
+        {
+            sondaPrev = sonda;
+            sonda = sonda->next;
+        }
+        sondaPrev->next = NULL;  //faccio puntare il penultimo nodo a NULL in modo da staccare l'ultimo nodo dalla lista 
+        delete sonda;      //elimino l'ultimo nodo della lista
+
+        return riferimento;
+    }
+    
 }
 
 lista* deleteAt(lista* riferimento)  //elimina un nodo in una determinata posizione
 {
-    if(riferimento == NULL)
+    if(riferimento == NULL)  //controllo se la lista è vuota
         cout<< "La lista e' vuota\n\n";
-
-    lista* sonda = riferimento;
-    lista* next = NULL;
-    int index;
-
-    cout<< "In che posizione si trova il numero da eliminare: ";
-    cin>>index;
-
-    if(index == 1)
-        return deleteTop(riferimento);
-
-    for(int i=0; i<index-2 ; i++)
+    else
     {
-        sonda = sonda->next;
+        lista* sonda = riferimento;
+        lista* sondaPrev = NULL;
+        int index;
+
+        cout<< "In che posizione si trova il numero da eliminare: ";
+        cin>>index;
+
+        if(index == 1)  //se l'utente vuole eliminare il numero in prima posizione chiamo la funzione per eliminare in testa
+            return deleteTop(riferimento);
+
+        for(int i=0; i<index-2 ; i++)  //itero la lista fino ad arrivare al nodo precedente quello da eliminare
+        {
+            sonda = sonda->next;
+        }
+
+        sondaPrev = sonda->next->next;  //creo una sonda al nodo successivo quello da elimianre
+        delete sonda->next;     //elimino il nodo
+        sonda->next = sondaPrev;    //collego il nodo precedente al nodo elimianto con il suo successivo
+
+        return riferimento;
     }
-
-    next = sonda->next->next;
-    free(sonda->next);
-    sonda->next = next;
-
-    return riferimento;
+    
 }
 
 lista* deleteGiven(lista* riferimento)  //elimina un nodo con un determinato valore
 {
-    int key;
-    lista* sonda = riferimento;
-    lista* sondaPrev = NULL;
-
-    cout<< "Quale numero vuoi eliminare? :";
-    cin>> key;
-
-    while(sonda != NULL && sonda->data != key)
+    if(riferimento == NULL)  //controllo se la lista è vuota
+        cout<< "La lista e' vuota\n\n";
+    else
     {
-        sondaPrev = sonda;
-        sonda = sonda->next;
-    }
-    sondaPrev->next = sonda->next;
-    delete sonda;
+        int key;
+        lista* sonda = riferimento;
+        lista* sondaPrev = NULL;
 
-    return riferimento;
+        cout<< "Quale numero vuoi eliminare? :";
+        cin>> key;
+
+        while(sonda != NULL && sonda->data != key)  //itero la lista finche non arrivo alla fine o finche non trovo ìl valore scelto dall'utente
+        {
+            sondaPrev = sonda;
+            sonda = sonda->next;
+        }
+        if(sonda == NULL) //se arrivo alla fine della lista notifico all'utente che il numero non è stato trovato
+            cout<<"Il numero non esiste\n";
+        else
+        { 
+            sondaPrev->next = sonda->next; //collego il nodo precedente a quello da eliminare con il successivo
+            delete sonda;   //elimino il nodo
+        }
+
+        return riferimento;
+    }
 }
 
 int search(lista* riferimento, int key)  //ritorna la posizione del nodo con il valore dato 
 {
-    lista* sonda = riferimento;
-    int index = 1;
-
-    while(sonda != NULL)
+    if(riferimento == NULL)  //controllo se la lista è vuota
+        cout<< "La lista e' vuota\n\n";
+    else
     {
-        if(sonda->data == key)
-            return index;
-        
-        sonda = sonda->next;
-        index++;
+        lista* sonda = riferimento;
+        int index = 1; //conta la posizione in cui mi trovo nella lista, è inizializzata a 1 e non 0
+
+        while(sonda != NULL)  //itero la lista fino all'ultimo elemento
+        {
+            if(sonda->data == key) //se il nodo corrente ha il valore scelto dall'utente ne torno la posizione
+                return index;
+            
+            sonda = sonda->next;
+            index++;
+        }
+        if(sonda == NULL) //se nella lista non ho trovato il valore scelto dall'utente torno il valore 0 per notificare che non esiste
+            return 0;
     }
 }
 
 int main()
 {
     lista* list = NULL;  //creo una lista vuota
-    int menu;
+    int menu;  //variabile dello switch
 
     while(true)
     {
@@ -189,6 +224,7 @@ int main()
         cout<<"4)Stampa la lista\n";
         cout<<"5)elimina il primo valore\n6)elimina l'ultimo valore\n";
         cout<<"7)elimina un valore in una posizione a tua scelta\n8)elimina un determinato valore\n";
+        cout<<"9)cerca la posizione di un valore\n";
         cout<<"0)exit\n:";
         cin>>menu;
 
@@ -207,18 +243,28 @@ int main()
                 stampa(list);
                 break;
             case 5:
-                list = deleteTop(list);
+                list = deleteTop(list); //aggiorno la lista con quello che ritorna la funzione 
                 cout<< endl;
                 break;
             case 6:
-                list = deleteCoda(list);
+                list = deleteCoda(list);    //aggiorno la lista con quello che ritorna la funzione 
                 cout<< endl;
                 break;
             case 7:
-                list = deleteAt(list);
+                list = deleteAt(list);    //aggiorno la lista con quello che ritorna la funzione
                 break;
             case 8:
-                list = deleteGiven(list);
+                list = deleteGiven(list);    //aggiorno la lista con quello che ritorna la funzione
+                break;
+            case 9:
+                int key;
+                cout<<"Quale valore vuoi cercare? :";
+                cin>>key;
+
+                if(search(list, key) == 0)  //se la funzione torna il valore 0 la key non esiste 
+                    cout<<"Il valore "<< key <<" non esiste";
+                else
+                    cout<<"Il valore si trova nella "<< search(list, key) <<" posizione\n\n";
                 break;
             case 0: 
                 return false;  //esco dal while
